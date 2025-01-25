@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
+    protected static ?string $modelLabel = 'کڕیار';
+    protected static ?string $pluralModelLabel = 'کڕیارەکان';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -26,13 +28,23 @@ class CustomerResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
-                    ->label('Name')
+                    ->label('ناوی کڕیار')
                     ->required(),
                 TextInput::make('phone')
+                    ->label('ژ.مۆبایل')
                     ->required(),
                 TextInput::make('address')
+                    ->label('ناونیشان')
                     ->required(),
-                
+                TextInput::make('guarantor_name')
+                    ->label('ناوی کەفیل')
+                    ->required(),
+                TextInput::make('guarantor_phone')
+                    ->label('ژ.مۆبایلی کەفیل')
+                    ->required(),
+                TextInput::make('guarantor_address')
+                    ->label('ناونیشانی کەفیل')
+                    ->required(),
             ]);
     }
 
@@ -40,9 +52,14 @@ class CustomerResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->sortable()->searchable(),
-                TextColumn::make('phone'),
-                TextColumn::make('created_at')->dateTime(),
+                TextColumn::make('name')->label('ناو')->sortable()->searchable(),
+                TextColumn::make('phone')->label('ژ.مۆبایل')->sortable()->searchable(),
+                TextColumn::make('address')->label('ناونیشان')->sortable()->searchable(),
+                TextColumn::make('guarantor_name')->label('ناوی کەفیل')->sortable()->searchable(),
+                TextColumn::make('guarantor_phone')->label('ژ.مۆبایلی کەفیل')->sortable()->searchable(),
+                TextColumn::make('guarantor_address')->label('ناونیشانی کەفیل')->sortable()->searchable(),
+                TextColumn::make('created_at')->label('بەروار')
+                ->dateTime('d-m-Y'),
             ])
             ->filters([
                 //
