@@ -6,18 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
-    protected $fillable = [
-        'name',
-        'phone',
-        'guarantor_name',
-        'guarantor_phone',
-        'guarantor_address',
-        'address',
-    ];
+    protected $fillable = ['name', 'phone', 'address']; 
 
     public function guarantor()
     {
-        return $this->belongsTo(Guarantor::class);
+        return $this->hasOne(Guarantor::class);
     }
 
     public function loans()

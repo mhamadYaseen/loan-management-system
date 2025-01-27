@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('guarantors', function (Blueprint $table) {
             $table->id();
-            $table->string('guarantor_name')->nullable();
-            $table->string('guarantor_phone')->nullable();
-            $table->string('guarantor_address')->nullable();
+            $table->foreignId('customer_id')->constrained()->onDelete('cascade'); // Links to customers
+            $table->string('name');
+            $table->string('phone');
+            $table->text('address');
             $table->timestamps();
         });
+        
     }
 
     /**

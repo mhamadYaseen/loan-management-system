@@ -5,7 +5,13 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Models\Customer;
+use App\Models\Loan;
 use Filament\Forms;
+use Filament\Forms\Components\Card;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,10 +20,12 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Route;
 
 class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
+
     protected static ?string $modelLabel = 'کڕیار';
     protected static ?string $pluralModelLabel = 'کڕیارەکان';
 
@@ -25,54 +33,150 @@ class CustomerResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                TextInput::make('name')
-                    ->label('ناوی کڕیار')
-                    ->required(),
-                TextInput::make('phone')
-                    ->label('ژ.مۆبایل')
-                    ->required(),
-                TextInput::make('address')
-                    ->label('ناونیشان')
-                    ->required(),
-                TextInput::make('guarantor_name')
-                    ->label('ناوی کەفیل')
-                    ->required(),
-                TextInput::make('guarantor_phone')
-                    ->label('ژ.مۆبایلی کەفیل')
-                    ->required(),
-                TextInput::make('guarantor_address')
-                    ->label('ناونیشانی کەفیل')
-                    ->required(),
-            ]);
+        return $form->schema([
+            Card::make([
+                TextInput::make('name')->label('ناوی کڕیار')->required(),
+                TextInput::make('phone')->label('ژ.مۆبایل')->required(),
+                Textarea::make('address')->label('ناونیشان')->required(),
+            ])->label('زانیاری کڕیار'),
+
+            Card::make([
+                TextInput::make('guarantor.name')->label('ناوی کەفیل')->required(),
+                TextInput::make('guarantor.phone')->label('ژ.مۆبایلی کەفیل')->required(),
+                Textarea::make('guarantor.address')->label('ناونیشانی کەفیل')->required(),
+            ])->label('زانیاری کەفیل'),
+
+            Card::make([
+                TextInput::make('loan.item_name')->label('ناوی کاڵا')->required(),
+                TextInput::make('loan.loan_amount')->label('کۆی قەرز')->numeric()->required(),
+                TextInput::make('loan.down_payment')->label('پارەی دەستپێک')->numeric()->default(0),
+                TextInput::make('loan.monthly_installment')->label('قەرزی مانگانە')->numeric()->required(),
+                DatePicker::make('loan.buying_date')->label('بەرواری کڕین')->required(),
+            ])->label('زانیاری قەرز'),
+        ]);
     }
+
+    public static function afterCreate(Customer $customer, array $data): void
+    {
+        // Create Guarantor
+        $customer->guarantor()->create([
+            'name' => $data['guarantor']['name'],
+            'phone' => $data['guarantor']['phone'],
+            'address' => $data['guarantor']['address'],
+        ]);
+
+        // Create Loan
+        $customer->loans()->create([
+            'item_name' => $data['loan']['item_name'],
+            'loan_amount' => $data['loan']['loan_amount'],
+            'down_payment' => $data['loan']['down_payment'],
+            'monthly_installment' => $data['loan']['monthly_installment'],
+            'outstanding_balance' => $data['loan']['loan_amount'] - $data['loan']['down_payment'],
+            'buying_date' => $data['loan']['buying_date'],
+            'status' => 'active',
+        ]);
+    }
+
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label('ناو')->sortable()->searchable(),
-                TextColumn::make('phone')->label('ژ.مۆبایل')->sortable()->searchable(),
-                TextColumn::make('address')->label('ناونیشان')->sortable()->searchable(),
-                TextColumn::make('guarantor_name')->label('ناوی کەفیل')->sortable()->searchable(),
-                TextColumn::make('guarantor_phone')->label('ژ.مۆبایلی کەفیل')->sortable()->searchable(),
-                TextColumn::make('guarantor_address')->label('ناونیشانی کەفیل')->sortable()->searchable(),
-                TextColumn::make('created_at')->label('بەروار')
-                ->dateTime('d-m-Y'),
-            ])
-            ->filters([
-                //
+                TextColumn::make('name')
+                    ->label('ناوی کڕیار') // Customer Name
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('phone')
+                    ->label('ژ.مۆبایل') // Customer Phone
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('address')
+                    ->label('ناونیشان') // Customer Address
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('guarantor.name')
+                    ->label('ناوی کەفیل') // Guarantor Name
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('guarantor.phone')
+                    ->label('ژ.مۆبایلی کەفیل') // Guarantor Phone
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('guarantor.address')
+                    ->label('ناونیشانی کەفیل') // Guarantor Address
+                    ->sortable()
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('viewLoan')
+                    ->label('بینینی قەرز') // "View Loan"
+                    ->modalHeading('زانیاری قەرز') // "Loan Information"
+                    ->modalButton('داخستن') // Close Button
+                    ->modalWidth('xl') // Optional: Set modal size
+                    ->form(function (Customer $record) {
+                        $loan = $record->loans->first(); // Assuming one loan per customer
+                        if (!$loan) {
+                            return [
+                                TextInput::make('message')
+                                    ->default('No loan available for this customer.')
+                                    ->disabled(),
+                            ];
+                        }
+
+                        return [
+                            Grid::make(2) // Creates a 2-column grid
+                                ->schema([
+                                    TextInput::make('item_name')
+                                        ->label('ناوی کاڵا') // Item Name
+                                        ->default($loan->item_name)
+                                        ->disabled()
+                                        ->columnSpan(1) // Makes it span 1 column in the grid
+                                    , // Maximum length
+                                    TextInput::make('loan_amount')
+                                        ->label('کۆی قەرز') // Loan Amount
+                                        ->default($loan->loan_amount)
+                                        ->disabled()
+                                        ->columnSpan(1), // Maximum length
+                                    TextInput::make('down_payment')
+                                        ->label('پارەی دەستپێک') // Down Payment
+                                        ->default($loan->down_payment)
+                                        ->disabled()
+                                        ->columnSpan(1),
+                                    TextInput::make('monthly_installment')
+                                        ->label('قەرزی مانگانە') // Monthly Installment
+                                        ->default($loan->monthly_installment)
+                                        ->disabled()
+                                        ->columnSpan(1),
+                                    TextInput::make('outstanding_balance')
+                                        ->label('قەرزی ماوە') // Outstanding Balance
+                                        ->default($loan->outstanding_balance)
+                                        ->disabled()
+                                        ->columnSpan(1),
+                                    TextInput::make('buying_date')
+                                        ->label('بەرواری کڕین') // Buying Date
+                                        ->default($loan->buying_date)
+                                        ->disabled()
+                                        ->columnSpan(1),
+                                    Select::make('status')
+                                        ->label('دۆخی قەرز') // Loan Status
+                                        ->options([
+                                            'active' => 'چالاک',
+                                            'completed' => 'تەواو',
+                                            'overdue' => 'داواکراو',
+                                        ])
+                                        ->default($loan->status)
+                                        ->disabled()
+                                        ->columnSpan(2), // Makes it span both columns
+                                ]),
+                        ];
+                    })
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
+
 
     public static function getRelations(): array
     {

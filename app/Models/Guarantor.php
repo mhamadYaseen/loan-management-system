@@ -6,14 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Guarantor extends Model
 {
-    protected $fillable = [
-        'guarantor_name',
-        'guarantor_phone',
-        'guarantor_address',
-    ];
+    protected $fillable = ['customer_id', 'name', 'phone', 'address'];
 
-    public function customers()
+    public function customer()
     {
-        return $this->hasMany(Customer::class);
+        return $this->belongsTo(Customer::class);
     }
 }

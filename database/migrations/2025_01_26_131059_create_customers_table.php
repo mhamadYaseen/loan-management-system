@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('phone')->nullable();
-            $table->foreignId('guarantor_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignId('loan_id')->nullable()->constrained()->onDelete('cascade');
-            $table->text('address')->nullable();
+            $table->string('phone');
+            $table->text('address');
             $table->timestamps();
         });
     }
