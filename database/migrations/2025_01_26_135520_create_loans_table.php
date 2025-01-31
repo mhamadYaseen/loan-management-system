@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained()->onDelete('cascade'); // Links to customers
             $table->string('item_name');
             $table->decimal('loan_amount', 10, 2);
-            $table->decimal('down_payment', 10, 2)->default(0);
+            $table->decimal('down_payment', 10, 2)->nullable()->default(0);
             $table->decimal('monthly_installment', 10, 2);
             $table->integer('remaining_months')->default(0);
             $table->decimal('outstanding_balance', 10, 2);

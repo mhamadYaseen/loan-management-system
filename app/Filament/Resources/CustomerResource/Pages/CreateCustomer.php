@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CustomerResource\Pages;
 
 use App\Filament\Resources\CustomerResource;
 use App\Models\Customer;
+use App\Models\Loan;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\DB;
 
@@ -33,11 +34,12 @@ class CreateCustomer extends CreateRecord
                 'loan_amount' => $data['loan']['loan_amount'],
                 'down_payment' => $data['loan']['down_payment'],
                 'monthly_installment' => $data['loan']['monthly_installment'],
+                'remaining_months' => ceil(($data['loan']['loan_amount'] - $data['loan']['down_payment']) / $data['loan']['monthly_installment']),
                 'outstanding_balance' => $data['loan']['loan_amount'] - $data['loan']['down_payment'],
                 'buying_date' => $data['loan']['buying_date'],
                 'status' => 'active',
             ]);
-
+            Loan::createInstallments($customer->loans->first());
             return $customer;
         });
     }

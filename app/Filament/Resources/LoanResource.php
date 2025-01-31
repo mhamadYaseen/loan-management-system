@@ -6,6 +6,7 @@ use App\Filament\Resources\LoanResource\Pages;
 use App\Filament\Resources\LoanResource\RelationManagers;
 use App\Models\Loan;
 use Filament\Forms;
+use Illuminate\Contracts\View\View;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -27,27 +28,27 @@ class LoanResource extends Resource
         return $form->schema([
             TextInput::make('item_name')
                 ->label('ناوی کاڵا') // Item Name
-                ->disabled(),
+            ,
             TextInput::make('loan_amount')
                 ->label('کۆی قەرز') // Loan Amount
-                ->disabled(),
+            ,
             TextInput::make('down_payment')
                 ->label('پارەی دەستپێک') // Down Payment
-                ->disabled(),
+            ,
             TextInput::make('monthly_installment')
                 ->label('قەرزی مانگانە') // Monthly Installment
-                ->disabled(),
+            ,
             DatePicker::make('buying_date')
                 ->label('بەرواری کڕین') // Buying Date
-                ->disabled(),
+
+            ,
             Select::make('status')
                 ->label('دۆخی قەرز') // Loan Status
                 ->options([
                     'active' => 'چالاک',
                     'completed' => 'تەواو',
                     'overdue' => 'داواکراو',
-                ])
-                ->disabled(),
+                ]),
         ]);
     }
 
@@ -56,13 +57,55 @@ class LoanResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('customer.name')
+                    ->label('ناوی کڕیار') // Customer Name
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('item_name')
+                    ->label('ناوی کاڵا') // Item Name
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('loan_amount')
+                    ->label('کۆی قەرز') // Loan Amount
+                    ->money('USD'),
+                Tables\Columns\TextColumn::make('down_payment')
+                    ->label('پارەی دەستپێک') // Down Payment
+                    ->money('USD'),
+                Tables\Columns\TextColumn::make('monthly_installment')
+                    ->label('قەرزی مانگانە') // Monthly Installment
+                    ->money('USD'),
+                Tables\Columns\TextColumn::make('remaining_months')
+                    ->label('باقی مانگەکان') // Remaining Months
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('outstanding_balance')
+                    ->label('قەرزی نەدراو') // Outstanding Balance
+                    ->money('USD'),
+                Tables\Columns\TextColumn::make('buying_date')
+                    ->label('بەرواری کڕین') // Buying Date
+                    ->date('Y/m/d'),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('دۆخی قەرز') // Loan Status
+                    ->badge()
+                    ->colors([
+                        'success' => 'active',
+                        'warning' => 'completed',
+                        'danger' => 'overdue',
+                    ]),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('view_installments')
+                    ->label('بینینی قیستەکان')  // View Installments in Kurdish
+                    ->icon('heroicon-o-currency-dollar')
+                    ->modalContent(fn(Loan $record): View => view('loans.installments-modal', [
+                        'loan' => $record,
+                        'installments' => $record->installments,
+                    ]))
+                    ->modalHeading('قیستەکان')  // Installments in Kurdish
+                    ->modalWidth('4xl')
+                    ->modalAlignment(\Filament\Support\Enums\Alignment::Center)
+                    
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -84,6 +127,6 @@ class LoanResource extends Resource
             'index' => Pages\ListLoans::route('/'),
             'create' => Pages\CreateLoan::route('/create'),
             'edit' => Pages\EditLoan::route('/{record}/edit'),
-        ];  
+        ];
     }
 }

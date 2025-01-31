@@ -18,6 +18,28 @@ class Loan extends Model
         'status',
     ];
 
+    public static function createInstallments(Loan $loan)
+    {
+        $remaining_balance = $loan->outstanding_balance;
+        $monthly_amount = $loan->monthly_installment;
+        $remaining_months = ceil($loan->outstanding_balance / $loan->monthly_installment); // Calculate required months
+
+        $due_date = (clone $loan->created_at)->addMonth(); // Clone to avoid modifying original timestamp
+
+        for ($i = 0; $i < $remaining_months; $i++) {
+            $installment_amount = min($remaining_balance, $monthly_amount); // Ensure last installment is correct
+
+            $loan->installments()->create([
+                'amount' => $installment_amount,
+                'remaining_balance' => $installment_amount, // Initially full amount due
+                'status' => 'pending',
+                'due_date' => $due_date,
+            ]);
+
+            $remaining_balance -= $installment_amount;
+            $due_date = $due_date->addMonth(); // Move to the next month
+        }
+    }
     public function customer()
     {
         return $this->belongsTo(Customer::class);

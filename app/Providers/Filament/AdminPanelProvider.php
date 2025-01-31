@@ -53,6 +53,17 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->renderHook('scripts.end', function () {
+                return '<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>';
+            })
+            ->renderHook('scripts.end', function () {
+                return '<script>
+                            window.Livewire = {
+                                stop: true
+                            };
+                        </script>';
+            });
+            ;
     }
 }
