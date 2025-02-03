@@ -19,8 +19,13 @@ class CreateCustomer extends CreateRecord
                 'name' => $data['name'],
                 'phone' => $data['phone'],
                 'address' => $data['address'],
+                'payment_type' => $data['payment_type'],
             ]);
-
+            if ($data['payment_type'] === 'with_salary') {
+                $customer->salary()->create([
+                    'salary_type' => $data['salary_type'],
+                ]);
+            }
             // Create the guarantor
             $customer->guarantor()->create([
                 'name' => $data['guarantor']['name'],

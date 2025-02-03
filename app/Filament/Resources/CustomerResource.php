@@ -38,6 +38,18 @@ class CustomerResource extends Resource
                 TextInput::make('name')->label('ناوی کڕیار')->required(),
                 TextInput::make('phone')->label('ژ.مۆبایل')->required(),
                 Textarea::make('address')->label('ناونیشان')->required(),
+                Select::make('payment_type')
+                    ->label('جۆری پارەدان')
+                    ->options([
+                        'monthly' => 'مانگانە',
+                        'with_salary' => 'بە مەعاش',
+                    ])
+                    ->required()
+                    ->live(), // Add live updates
+                TextInput::make('salary_type')
+                    ->label('جۆری مەعاش')
+                    ->visible(fn (Forms\Get $get): bool => $get('payment_type') === 'with_salary')
+                    ->required(fn (Forms\Get $get): bool => $get('payment_type') === 'with_salary'),
             ])->label('زانیاری کڕیار'),
 
             Card::make([

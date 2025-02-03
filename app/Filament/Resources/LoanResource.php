@@ -13,9 +13,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\HtmlString;
 
 class LoanResource extends Resource
 {
@@ -89,28 +92,17 @@ class LoanResource extends Resource
                         'warning' => 'completed',
                         'danger' => 'overdue',
                     ]),
+                    
+            
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('view_installments')
-                    ->label('بینینی قیستەکان')  // View Installments in Kurdish
-                    ->icon('heroicon-o-currency-dollar')
-                    ->modalContent(fn(Loan $record): View => view('loans.installments-modal', [
-                        'loan' => $record,
-                        'installments' => $record->installments,
-                    ]))
-                    ->modalHeading('قیستەکان')  // Installments in Kurdish
-                    ->modalWidth('4xl')
-                    ->modalAlignment(\Filament\Support\Enums\Alignment::Center)
-                    
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\Action::make('installments')
+                    ->label('قیستەکان')
+                    ->url(fn (Loan $record): string => route('installments', ['loan' => $record->id]))
+                    ->openUrlInNewTab()
             ]);
     }
 

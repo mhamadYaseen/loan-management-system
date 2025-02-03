@@ -5,10 +5,12 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\InstallmentResource\Pages;
 use App\Filament\Resources\InstallmentResource\RelationManagers;
 use App\Models\Installment;
+use App\Models\Loan;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
+use Illuminate\Contracts\View\View;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -34,62 +36,55 @@ class InstallmentResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('loan.item_name')
+                    ->label('ناوی کاڵا') // Item Name
+                ,
                 TextColumn::make('loan.customer.name')
                     ->label('ناوی کڕیار') // Customer Name
-                    ->searchable(),
+                ,
                 TextColumn::make('amount')
-                    ->label('کۆی قەرزی مانگانە') // Installment Amount
-                    ->money('USD'),
+                    ->label('قیستە') // Amount
+                ,
                 TextColumn::make('remaining_balance')
-                    ->label('قەرزی ماوە') // Remaining Balance
-                    ->money('USD'),
+                    ->label('باقی') // Remaining
+                ,
                 TextColumn::make('status')
-                    ->label('دۆخی پارەدان') // Payment Status
-                    ->badge()
-                    ->colors([
-                        'success' => 'paid',
-                        'warning' => 'partially_paid',
-                        'danger' => 'pending',
-                    ]),
-                TextColumn::make('paid_date')
-                    ->label('بەرواری مانگ') // Due Date
-                    ->date(),
+                    ->label('دۆخ') // Status
+                ,
+                TextColumn::make('due_date')
+                    ->label('بەرواری داواکردن') // Due Date
+                ,
             ])
             ->actions([
-                Tables\Actions\Action::make('addPayment')
-                    ->label('پارە دانان') // "Add Payment"
-                    ->action(function (Installment $record, array $data) {
-                        $paymentAmount = $data['payment_amount'];
-
-                        // Add payment and update installment
-                        $record->addPayment($paymentAmount);
-
-                        // Create payment record
-                        $record->payments()->create([
-                            'installment_id' => $record->id,
-                            'payment_amount' => $paymentAmount,
-                            'payment_date' => now(),
-                        ]);
-
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\Action::make('pay')
+                    ->label('پارەدان') // Pay
+                    ->action(function (Installment $record, array $data): void {
+                        $record->pay($data['amount'], $record);
                         Notification::make()
-                            ->title('Payment Added Successfully!')
-                            ->success()
+                            ->title('پارەدانی پاشەکەوتکرا')
+                            ->body('پارەکە بەسەرکەوتویی پارەدرا')
                             ->send();
                     })
                     ->form([
-                        TextInput::make('payment_amount')
-                            ->label('بڕی پارە') // Payment Amount
+                        TextInput::make('amount')
+                            ->label('بڕی پارە') // Amount
                             ->numeric()
-                            ->required()
-                            ->minValue(1)
-                            ->maxValue(fn($record) => $record->remaining_balance),
-                    ]),
+                            ->required(),
+                    ])
+                    ->modalHeading('پارەدان') // Payment
+                    ->modalButton('پارەدان') // Pay
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 
+    public static function getTableRecordUrl(Installment $record): string
+    {
+        return route('admin.loans.show', $record->loan_id); // This will show installments for the loan
+
+    }
 
     public static function getRelations(): array
     {

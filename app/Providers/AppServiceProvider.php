@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Filament\Facades\Filament;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,5 +24,5 @@ class AppServiceProvider extends ServiceProvider
         Filament::serving(function () {
             app()->setLocale('ku');
         });
-    }
+        }
 }

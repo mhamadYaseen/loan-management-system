@@ -55,15 +55,28 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->renderHook('scripts.end', function () {
-                return '<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>';
+                return <<<'HTML'
+            <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+            <script>    
+                document.addEventListener('livewire:load', function () {
+                    Livewire.on('openInstallmentModal', installmentId => {
+                        Livewire.emit('loadInstallment', installmentId);
+                    });
+                });
+            </script>
+        HTML;
             })
-            ->renderHook('scripts.end', function () {
-                return '<script>
-                            window.Livewire = {
-                                stop: true
-                            };
-                        </script>';
-            });
-            ;
+            ->renderHook('head.end', function () {
+                return <<<'HTML'
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+    @livewireStyles
+    @livewireScripts
+HTML;
+            })
+            ->authMiddleware([
+                Authenticate::class,
+            ])
+        ;
     }
 }

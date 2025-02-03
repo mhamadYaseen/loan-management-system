@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained()->onDelete('cascade'); // Links to customers
+            $table->foreignId('customer_id')->constrained()->onDelete('cascade');
             $table->string('item_name');
             $table->decimal('loan_amount', 10, 2);
             $table->decimal('down_payment', 10, 2)->nullable()->default(0);
             $table->decimal('monthly_installment', 10, 2);
-            $table->integer('remaining_months')->default(0);
+            $table->integer('remaining_months')->default(0)->nullable();
             $table->decimal('outstanding_balance', 10, 2);
             $table->date('buying_date');
             $table->enum('status', ['active', 'completed', 'overdue'])->default('active');

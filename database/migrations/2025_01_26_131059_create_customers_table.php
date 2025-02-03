@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone');
             $table->text('address');
+            $table->enum('payment_type',['monthly','with_salary']);
+            $table->string('salary_type')->nullable();
             $table->timestamps();
         });
     }

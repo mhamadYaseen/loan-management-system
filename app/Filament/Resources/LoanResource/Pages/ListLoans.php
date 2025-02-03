@@ -9,7 +9,7 @@ use Filament\Resources\Pages\ListRecords;
 class ListLoans extends ListRecords
 {
     protected static string $resource = LoanResource::class;
-
+    protected float $paymentAmount = 0.00;
     protected function getHeaderActions(): array
     {
         return [

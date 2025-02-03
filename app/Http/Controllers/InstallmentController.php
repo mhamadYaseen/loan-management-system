@@ -29,7 +29,7 @@ class InstallmentController extends Controller
         $installment->save();
 
         // Update loan
-        $loan = Loan::find($installment->loan_id);
+        $loan = $installment->loan;
         $loan->outstanding_balance -= $paymentAmount;
         $loan->remaining_months = ceil($loan->outstanding_balance / $loan->monthly_installment);
         $loan->save();
@@ -41,6 +41,13 @@ class InstallmentController extends Controller
         ]);
 
         // 🔥 Force Livewire to refresh
-        return redirect()->back()->with('livewire_refresh', true);
+    return redirect()->back()->with('success', 'Payment recorded successfully!');
+    }
+
+    public function show($loan_id)
+    {
+        $installments = Installment::where('loan_id', $loan_id)->get();
+        $loan = Loan::find($loan_id);
+        return view('loan.installments',['installments'=>$installments,'loan'=>$loan]);
     }
 }
