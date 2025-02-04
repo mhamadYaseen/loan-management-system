@@ -37,7 +37,7 @@ class CustomerResource extends Resource
             Card::make([
                 TextInput::make('name')->label('ناوی کڕیار')->required(),
                 TextInput::make('phone')->label('ژ.مۆبایل')->required(),
-                Textarea::make('address')->label('ناونیشان')->required(),
+                TextInput::make('address')->label('ناونیشان')->required(),
                 Select::make('payment_type')
                     ->label('جۆری پارەدان')
                     ->options([
@@ -50,13 +50,15 @@ class CustomerResource extends Resource
                     ->label('جۆری مەعاش')
                     ->visible(fn (Forms\Get $get): bool => $get('payment_type') === 'with_salary')
                     ->required(fn (Forms\Get $get): bool => $get('payment_type') === 'with_salary'),
-            ])->label('زانیاری کڕیار'),
+            ])->label('زانیاری کڕیار')
+            ->columns(4), 
 
             Card::make([
                 TextInput::make('guarantor.name')->label('ناوی کەفیل')->required(),
                 TextInput::make('guarantor.phone')->label('ژ.مۆبایلی کەفیل')->required(),
-                Textarea::make('guarantor.address')->label('ناونیشانی کەفیل')->required(),
-            ])->label('زانیاری کەفیل'),
+                TextInput::make('guarantor.address')->label('ناونیشانی کەفیل')->required(),
+            ])->label('زانیاری کەفیل')
+            ->columns(3),
 
             Card::make([
                 TextInput::make('loan.item_name')->label('ناوی کاڵا')->required(),
@@ -64,7 +66,8 @@ class CustomerResource extends Resource
                 TextInput::make('loan.down_payment')->label('پارەی دەستپێک')->numeric()->default(0),
                 TextInput::make('loan.monthly_installment')->label('قەرزی مانگانە')->numeric()->required(),
                 DatePicker::make('loan.buying_date')->label('بەرواری کڕین')->required(),
-            ])->label('زانیاری قەرز'),
+            ])->label('زانیاری قەرز')
+            ->columns(3),
         ]);
     }
 

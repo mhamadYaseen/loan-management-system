@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('monthly_installment', 10, 2);
             $table->integer('remaining_months')->default(0)->nullable();
             $table->decimal('outstanding_balance', 10, 2);
+            $table->decimal('returned_money', 10, 2)->nullable();
             $table->date('buying_date');
             $table->enum('status', ['active', 'completed', 'overdue'])->default('active');
             $table->timestamps();

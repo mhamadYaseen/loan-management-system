@@ -31,6 +31,7 @@ class InstallmentController extends Controller
         // Update loan
         $loan = $installment->loan;
         $loan->outstanding_balance -= $paymentAmount;
+        $loan->returned_money += $paymentAmount;
         $loan->remaining_months = ceil($loan->outstanding_balance / $loan->monthly_installment);
         $loan->save();
 
@@ -47,6 +48,7 @@ class InstallmentController extends Controller
     public function show($loan_id)
     {
         $installments = Installment::where('loan_id', $loan_id)->get();
+        $returned_mony = Loan::where('loan_id', $loan_id);
         $loan = Loan::find($loan_id);
         return view('loan.installments',['installments'=>$installments,'loan'=>$loan]);
     }

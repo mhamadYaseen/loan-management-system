@@ -102,7 +102,6 @@ class LoanResource extends Resource
                 Tables\Actions\Action::make('installments')
                     ->label('قیستەکان')
                     ->url(fn (Loan $record): string => route('installments', ['loan' => $record->id]))
-                    ->openUrlInNewTab()
             ]);
     }
 

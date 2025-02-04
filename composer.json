@@ -10,6 +10,7 @@
         "filament/filament": "^3.2",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
+        "laravel/ui": "^4.6",
         "livewire/livewire": "^3.5",
         "twbs/bootstrap": "^5.3"
     },
