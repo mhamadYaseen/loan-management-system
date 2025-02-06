@@ -17,6 +17,10 @@
         "vite": "^6.0"
     },
     "dependencies": {
+        "@alpinejs/collapse": "^3.14.8",
+        "@alpinejs/focus": "^3.14.8",
+        "@alpinejs/persist": "^3.14.8",
+        "@awcodes/alpine-floating-ui": "^3.6.3",
         "bootstrap": "^5.3.3",
         "bootstrap-inline-rtl": "^3.3.7"
     }

@@ -22,9 +22,7 @@ class CreateCustomer extends CreateRecord
                 'payment_type' => $data['payment_type'],
             ]);
             if ($data['payment_type'] === 'with_salary') {
-                $customer->salary()->create([
-                    'salary_type' => $data['salary_type'],
-                ]);
+                $customer->salary_type= $data['salary_type'];
             }
             // Create the guarantor
             $customer->guarantor()->create([
@@ -43,6 +41,7 @@ class CreateCustomer extends CreateRecord
                 'outstanding_balance' => $data['loan']['loan_amount'] - $data['loan']['down_payment'],
                 'buying_date' => $data['loan']['buying_date'],
                 'status' => 'active',
+                'currency' => $data['loan']['currency'],
             ]);
             Loan::createInstallments($customer->loans->first());
             return $customer;

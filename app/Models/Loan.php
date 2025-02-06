@@ -15,6 +15,7 @@ class Loan extends Model
         'remaining_months',
         'outstanding_balance',
         'returned_money',
+        'currency',
         'buying_date',
         'status',
     ];

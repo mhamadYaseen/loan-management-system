@@ -14,8 +14,11 @@ Route::get('/', function () {
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\ProfileController;
 
-// // ...existing code...
-Route::middleware(['auth'])->group(function () {
+Route::post('admin/login', function () {
+    return view('auth.login');
+})->name('login');
+
+    Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
@@ -24,10 +27,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('logout', function () {
         Auth::logout();
-        return redirect('/');
+        return redirect('/admin/login');
     })->name('logout');
     //     Route::get('/loans/{loan}', [LoanController::class, 'show'])->name('loans.show');
-    Route::get('installments/{loan}', [InstallmentController::class,'show'])->name('installments', 'show');
+    Route::get('installments/{loan}', [InstallmentController::class, 'show'])->name('installments');
+    Route::get('/installments/{installment}/edit', [InstallmentController::class, 'edit'])->name('installments.edit');
+    Route::put('/installments/{installment}', [InstallmentController::class, 'update'])->name('installments.update');
+
     Route::post('/installments/{installment}/pay', [InstallmentController::class, 'pay'])
         ->name('installments.pay');
-});
+    });
+    

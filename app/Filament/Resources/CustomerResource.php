@@ -10,6 +10,7 @@ use Filament\Forms;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\HasManyRepeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -42,32 +43,38 @@ class CustomerResource extends Resource
                     ->label('جۆری پارەدان')
                     ->options([
                         'monthly' => 'مانگانە',
-                        'with_salary' => 'بە مەعاش',
+                        'with_salary' => 'بە معاش',
                     ])
                     ->required()
                     ->live(), // Add live updates
                 TextInput::make('salary_type')
                     ->label('جۆری مەعاش')
-                    ->visible(fn (Forms\Get $get): bool => $get('payment_type') === 'with_salary')
-                    ->required(fn (Forms\Get $get): bool => $get('payment_type') === 'with_salary'),
+                    ->visible(fn(Forms\Get $get): bool => $get('payment_type') === 'with_salary')
+                    ->required(fn(Forms\Get $get): bool => $get('payment_type') === 'with_salary'),
             ])->label('زانیاری کڕیار')
-            ->columns(4), 
+                ->columns(4),
 
             Card::make([
                 TextInput::make('guarantor.name')->label('ناوی کەفیل')->required(),
                 TextInput::make('guarantor.phone')->label('ژ.مۆبایلی کەفیل')->required(),
                 TextInput::make('guarantor.address')->label('ناونیشانی کەفیل')->required(),
             ])->label('زانیاری کەفیل')
-            ->columns(3),
+                ->columns(3),
 
             Card::make([
                 TextInput::make('loan.item_name')->label('ناوی کاڵا')->required(),
+                Select::make('loan.currency')
+                ->label('جۆری پارە')
+                ->options([
+                    'USD' => 'دۆلاری ئەمریکا ($)',
+                    'IQD' => 'دیناری عێراق (IQD)',
+                ]),
                 TextInput::make('loan.loan_amount')->label('کۆی قەرز')->numeric()->required(),
                 TextInput::make('loan.down_payment')->label('پارەی دەستپێک')->numeric()->default(0),
                 TextInput::make('loan.monthly_installment')->label('قەرزی مانگانە')->numeric()->required(),
                 DatePicker::make('loan.buying_date')->label('بەرواری کڕین')->required(),
             ])->label('زانیاری قەرز')
-            ->columns(3),
+                ->columns(3),
         ]);
     }
 
@@ -89,6 +96,7 @@ class CustomerResource extends Resource
             'outstanding_balance' => $data['loan']['loan_amount'] - $data['loan']['down_payment'],
             'buying_date' => $data['loan']['buying_date'],
             'status' => 'active',
+            'currency' => $data['loan']['currency'],
         ]);
     }
 
@@ -103,22 +111,21 @@ class CustomerResource extends Resource
                     ->searchable(),
                 TextColumn::make('phone')
                     ->label('ژ.مۆبایل') // Customer Phone
-                    ->sortable()
                     ->searchable(),
                 TextColumn::make('address')
                     ->label('ناونیشان') // Customer Address
-                    ->sortable()
                     ->searchable(),
                 TextColumn::make('guarantor.name')
                     ->label('ناوی کەفیل') // Guarantor Name
-                    ->sortable()
                     ->searchable(),
                 TextColumn::make('guarantor.phone')
                     ->label('ژ.مۆبایلی کەفیل') // Guarantor Phone
-                    ->sortable()
                     ->searchable(),
                 TextColumn::make('guarantor.address')
                     ->label('ناونیشانی کەفیل') // Guarantor Address
+                    ->searchable(),
+                TextColumn::make('loans.buying_date')
+                    ->label('بەرواری کرین') // Due Date
                     ->sortable()
                     ->searchable(),
             ])

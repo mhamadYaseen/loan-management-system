@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
-    protected $fillable = ['name', 'phone', 'address']; 
+    protected $fillable = ['name', 'phone', 'address', 'payment_type', 'salary_type']; 
 
     public function guarantor()
     {

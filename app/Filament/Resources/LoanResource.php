@@ -23,8 +23,10 @@ use Illuminate\Support\HtmlString;
 class LoanResource extends Resource
 {
     protected static ?string $model = Loan::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static bool $softDelete = true;
+    protected static ?string $label = 'قەرز'; // Loans
+    protected static ?string $pluralLabel = 'قەرزەکان'; // Loans
 
     public static function form(Form $form): Form
     {
@@ -45,6 +47,13 @@ class LoanResource extends Resource
                 ->label('بەرواری کڕین') // Buying Date
 
             ,
+            Select::make('currency')
+                ->label('جۆری پارە') // Currency
+                ->options([
+                    'USD' => 'دۆلاری ئەمریکی',
+                    'IQD' => 'دیناری عێراقی',
+                ]),
+                
             Select::make('status')
                 ->label('دۆخی قەرز') // Loan Status
                 ->options([
@@ -68,22 +77,25 @@ class LoanResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('loan_amount')
                     ->label('کۆی قەرز') // Loan Amount
-                    ->money('USD'),
+                    ->money(fn (Loan $record): string => $record->currency),
                 Tables\Columns\TextColumn::make('down_payment')
                     ->label('پارەی دەستپێک') // Down Payment
-                    ->money('USD'),
+                    ->money(fn (Loan $record): string => $record->currency),
+                
                 Tables\Columns\TextColumn::make('monthly_installment')
                     ->label('قەرزی مانگانە') // Monthly Installment
-                    ->money('USD'),
+                    ->money(fn (Loan $record): string => $record->currency),
                 Tables\Columns\TextColumn::make('remaining_months')
                     ->label('باقی مانگەکان') // Remaining Months
                     ->searchable(),
                 Tables\Columns\TextColumn::make('outstanding_balance')
                     ->label('قەرزی نەدراو') // Outstanding Balance
-                    ->money('USD'),
+                    ->money(fn (Loan $record): string => $record->currency),
                 Tables\Columns\TextColumn::make('buying_date')
                     ->label('بەرواری کڕین') // Buying Date
                     ->date('Y/m/d'),
+                    
+                
                 Tables\Columns\TextColumn::make('status')
                     ->label('دۆخی قەرز') // Loan Status
                     ->badge()

@@ -2,7 +2,7 @@
 
 return [
 
-    'path'=>'admin',
+    'path' => 'admin',
     /*
     |--------------------------------------------------------------------------
     | Broadcasting
@@ -86,5 +86,10 @@ return [
     */
 
     'livewire_loading_delay' => 'default',
-    
+    'auth' => [
+        'guard' => 'web', // Change to 'web' if you're using Breeze, otherwise keep 'filament'
+        'pages' => [
+            'login' => \Filament\Http\Livewire\Auth\Login::class,
+        ],
+    ],
 ];

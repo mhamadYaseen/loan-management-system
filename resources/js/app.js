@@ -21,8 +21,3 @@ document.addEventListener('alpine:init', () => {
        }
    }));
 });
-
-import { installmentPayment } from './components/installment-payment';
-
-Alpine.data('installmentPayment', installmentPayment);
-Alpine.start();
