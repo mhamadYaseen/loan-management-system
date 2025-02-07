@@ -5,10 +5,10 @@ use App\Filament\Resources\LoanResource;
 use App\Http\Controllers\InstallmentController;
 use Illuminate\Support\Facades\Auth;
 
-
+Auth::routes(['register' => false]);
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/admin/login');
 });
 
 use App\Http\Controllers\LoanController;
