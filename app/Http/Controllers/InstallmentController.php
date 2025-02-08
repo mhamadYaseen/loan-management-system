@@ -35,6 +35,9 @@ class InstallmentController extends Controller
         $loan->outstanding_balance -= $paymentAmount;
         $loan->returned_money += $paymentAmount;
         $loan->remaining_months = ceil($loan->outstanding_balance / $loan->monthly_installment);
+        if($loan->outstanding_balance == 0){
+            $loan->status = 'completed';
+        }
         $loan->save();
 
         // Log the payment
@@ -98,6 +101,9 @@ class InstallmentController extends Controller
         // Ensure outstanding balance never goes negative
         if ($loan->outstanding_balance < 0) {
             $loan->outstanding_balance = 0;
+
+            // If balance is zero, mark loan as completed
+            $loan->status = 'completed';
         }
 
         // Ensure returned money never exceeds total loan amount

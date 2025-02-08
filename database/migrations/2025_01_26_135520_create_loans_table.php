@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('outstanding_balance', 10, 0);
             $table->decimal('returned_money', 10, 0)->nullable();
             $table->date('buying_date');
-            $table->enum('status', ['active', 'completed', 'overdue'])->default('active');
+            $table->enum('status', ['active', ' ', 'overdue'])->default('active');
             $table->timestamps();
         });
         
