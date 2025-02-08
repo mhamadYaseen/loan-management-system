@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\CustomForgotPassword;
 use App\Filament\Resources\AdminResource\Pages\EditProfile;
 use App\Filament\Widgets\MonthlyLoanStats;
 use Filament\Http\Middleware\Authenticate;
@@ -34,8 +35,6 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->authGuard('web')
-            ->passwordReset() // ✅ Enables password reset
-            ->authGuard('web')
             ->pages([
                 EditProfile::class, // 🔥 Register the Edit Profile page
             ])
@@ -64,14 +63,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->navigationItems([
-                NavigationItem::make()
-                    ->label('پڕۆفایل')
-                    ->url('/admin/edit-profile')
-                    ->icon('heroicon-o-user')
-                    ->group('Settings')
-                    ->sort(100),
             ])
             ->renderHook('scripts.end', function () {
                 return <<<'HTML'

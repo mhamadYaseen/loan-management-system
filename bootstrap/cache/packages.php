@@ -76,6 +76,28 @@
       0 => 'Filament\\Widgets\\WidgetsServiceProvider',
     ),
   ),
+  'jenssegers/agent' => 
+  array (
+    'aliases' => 
+    array (
+      'Agent' => 'Jenssegers\\Agent\\Facades\\Agent',
+    ),
+    'providers' => 
+    array (
+      0 => 'Jenssegers\\Agent\\AgentServiceProvider',
+    ),
+  ),
+  'joaopaulolndev/filament-edit-profile' => 
+  array (
+    'aliases' => 
+    array (
+      'FilamentEditProfile' => 'Joaopaulolndev\\FilamentEditProfile\\Facades\\FilamentEditProfile',
+    ),
+    'providers' => 
+    array (
+      0 => 'Joaopaulolndev\\FilamentEditProfile\\FilamentEditProfileServiceProvider',
+    ),
+  ),
   'kirschbaum-development/eloquent-power-joins' => 
   array (
     'providers' => 

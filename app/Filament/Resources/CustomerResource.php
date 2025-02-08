@@ -115,6 +115,10 @@ class CustomerResource extends Resource
                 TextColumn::make('address')
                     ->label('ناونیشان') // Customer Address
                     ->searchable(),
+                TextColumn::make('loans.buying_date')
+                    ->label('بەرواری کرین') // Due Date
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('guarantor.name')
                     ->label('ناوی کەفیل') // Guarantor Name
                     ->searchable(),
@@ -124,10 +128,7 @@ class CustomerResource extends Resource
                 TextColumn::make('guarantor.address')
                     ->label('ناونیشانی کەفیل') // Guarantor Address
                     ->searchable(),
-                TextColumn::make('loans.buying_date')
-                    ->label('بەرواری کرین') // Due Date
-                    ->sortable()
-                    ->searchable(),
+                
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

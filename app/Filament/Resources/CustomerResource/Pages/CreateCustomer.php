@@ -22,7 +22,7 @@ class CreateCustomer extends CreateRecord
                 'payment_type' => $data['payment_type'],
             ]);
             if ($data['payment_type'] === 'with_salary') {
-                $customer->salary_type= $data['salary_type'];
+                $customer->salary_type = $data['salary_type'];
             }
             // Create the guarantor
             $customer->guarantor()->create([
@@ -46,5 +46,10 @@ class CreateCustomer extends CreateRecord
             Loan::createInstallments($customer->loans->first());
             return $customer;
         });
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return '/admin/customers';
     }
 }
